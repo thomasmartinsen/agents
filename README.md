@@ -51,6 +51,28 @@ brand guide or an official Microsoft position. Actual experiences, customer
 stories, company messaging, and personal opinions must come from you or approved
 source material.
 
+## Codex
+
+The same agents are available to Codex as project-scoped custom agents in
+`.codex/agents/*.toml`, using the
+[Codex custom agent format](https://developers.openai.com/codex/subagents)
+(`name`, `description`, `developer_instructions`). Agent names use snake_case,
+for example `linkedin_writer`. Ask Codex to use one, such as "Have
+linkedin_writer draft a post from this brief."
+
+`.github/agents/*.agent.md` is the source of truth. After changing a profile,
+regenerate the Codex files:
+
+```sh
+python3 scripts/sync_codex_agents.py            # update .codex/agents
+python3 scripts/sync_codex_agents.py --install  # also copy to ~/.codex/agents for all projects
+python3 scripts/sync_codex_agents.py --check    # fail if out of date
+```
+
+Codex custom agents cannot restrict individual tools, so each profile's `tools`
+list is converted into written tool boundaries in its instructions. Codex agents
+inherit the parent session's sandbox and approval settings.
+
 ## Tools and boundaries
 
 Profiles use a role-specific subset of `read`, `search`, `edit`, and `web` tool
