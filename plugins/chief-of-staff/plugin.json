@@ -1,0 +1,10 @@
+{
+  "name": "chief-of-staff",
+  "description": "Review Thomas Martinsen's commitments, calendar capacity, priorities, and weekly plans to protect time, focus, family, and recovery.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Thomas Martinsen"
+  },
+  "repository": "https://github.com/thomasmartinsen/agents",
+  "agents": "agents/"
+}

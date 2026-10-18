@@ -21,7 +21,38 @@ creator, alongside personal strategy, capacity, relationships, and wellbeing.
 | [Relationship Manager](.github/agents/relationship-manager.agent.md) | Thoughtful follow-ups, reconnections, and consent-aware introductions | "Use these meeting notes to suggest three meaningful follow-ups and draft messages." |
 | [Strategic Advisor](.github/agents/strategic-advisor.agent.md) | Strategic options, assumption testing, and long-term decisions | "Challenge this initiative, compare the alternatives, and propose a low-cost experiment." |
 
-## Use
+## Install from the marketplace
+
+Each of the 12 agents is also an independently installable Copilot CLI plugin
+under `plugins/<agent-id>/`. Register the
+[marketplace](https://github.com/thomasmartinsen/marketplace), then install the
+agents you need:
+
+```sh
+copilot plugin marketplace add thomasmartinsen/marketplace
+copilot plugin marketplace browse thomasmartinsen
+copilot plugin install linkedin-writer@thomasmartinsen
+copilot plugin install chief-of-staff@thomasmartinsen
+```
+
+Use any filename from the table above without `.agent.md` as the plugin ID.
+After installation, start a new session and select the agent with `/agent`.
+You do not need to open this repository to use an installed plugin. Both
+repositories are private; installation requires GitHub access to both.
+
+To update an installed agent:
+
+```sh
+copilot plugin marketplace update thomasmartinsen
+copilot plugin update linkedin-writer
+```
+
+Plugins preserve the original profiles, including their tool restrictions,
+personal context, and safety boundaries. They do not add tools, MCP servers,
+account access, or background automation. Existing project or personal agents
+with the same ID take precedence over plugin-provided agents.
+
+## Use from this repository
 
 The profiles live in `.github/agents/*.agent.md`. Open this repository in a
 Copilot client that supports custom agents, select an agent in the client's
@@ -72,6 +103,41 @@ python3 scripts/sync_codex_agents.py --check    # fail if out of date
 Codex custom agents cannot restrict individual tools, so each profile's `tools`
 list is converted into written tool boundaries in its instructions. Codex agents
 inherit the parent session's sandbox and approval settings.
+
+## Maintaining plugins
+
+`.github/agents/*.agent.md` remains the source of truth for both generated
+formats. Do not edit files under `plugins/` or `.codex/agents/` directly.
+After editing a profile, regenerate both and check the results:
+
+```sh
+python scripts/sync_codex_agents.py
+python scripts/sync_plugins.py
+python scripts/sync_codex_agents.py --check
+python scripts/sync_plugins.py --check
+python -m unittest discover -s scripts -p "test_*.py"
+```
+
+The plugins use the supported Copilot-specific manifest format: each root
+`plugin.json` declares its `agents/` directory. The packaged agent is an
+unchanged copy of its source profile. CI checks both generated formats and
+runs the packaging tests.
+
+When adding or removing agents, changing descriptions, or releasing a new
+version, export the catalog into a separate checkout of the marketplace:
+
+```powershell
+python scripts\sync_plugins.py --marketplace-output C:\repos\marketplace\.github\plugin\marketplace.json
+python scripts\sync_plugins.py --check --marketplace-output C:\repos\marketplace\.github\plugin\marketplace.json
+```
+
+This replaces the entire target catalog, which currently lists only these
+agents. If the marketplace later includes other plugins, merge the exported
+entries rather than overwriting them. The catalog references `main` in this
+repository, so merge plugin changes here before the corresponding marketplace
+update. For a release, update `VERSION` in `scripts/sync_plugins.py`, regenerate,
+and commit the packages and catalog in their respective repositories. Existing
+installations update explicitly; the catalog does not pin immutable releases.
 
 ## Tools and boundaries
 

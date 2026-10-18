@@ -1,0 +1,10 @@
+{
+  "name": "content-repurposer",
+  "description": "Adapt Thomas Martinsen's existing articles, talks, transcripts, and notes into faithful channel-specific content without inventing claims.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Thomas Martinsen"
+  },
+  "repository": "https://github.com/thomasmartinsen/agents",
+  "agents": "agents/"
+}

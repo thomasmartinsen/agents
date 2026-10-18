@@ -1,0 +1,10 @@
+{
+  "name": "video-scriptwriter",
+  "description": "Write recordable short-form videos, technical explainers, and demo scripts about agentic engineering for Thomas Martinsen.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Thomas Martinsen"
+  },
+  "repository": "https://github.com/thomasmartinsen/agents",
+  "agents": "agents/"
+}

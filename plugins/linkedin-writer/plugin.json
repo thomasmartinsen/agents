@@ -1,0 +1,10 @@
+{
+  "name": "linkedin-writer",
+  "description": "Draft and refine practical LinkedIn posts in Thomas Martinsen's personal voice about agentic engineering, Microsoft technologies, and technology evangelism.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Thomas Martinsen"
+  },
+  "repository": "https://github.com/thomasmartinsen/agents",
+  "agents": "agents/"
+}

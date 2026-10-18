@@ -1,0 +1,10 @@
+{
+  "name": "topic-researcher",
+  "description": "Research timely, source-backed content ideas and editorial briefs for Thomas Martinsen's Twoday evangelism, Microsoft MVP work, and agentic engineering community.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Thomas Martinsen"
+  },
+  "repository": "https://github.com/thomasmartinsen/agents",
+  "agents": "agents/"
+}

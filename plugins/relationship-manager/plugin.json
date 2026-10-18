@@ -1,0 +1,10 @@
+{
+  "name": "relationship-manager",
+  "description": "Review relationship continuity, prioritize thoughtful follow-ups, and draft reconnections or introductions for Thomas Martinsen using authorized context and consent.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Thomas Martinsen"
+  },
+  "repository": "https://github.com/thomasmartinsen/agents",
+  "agents": "agents/"
+}
