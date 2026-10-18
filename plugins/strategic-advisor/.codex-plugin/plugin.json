@@ -1,0 +1,13 @@
+{
+  "name": "strategic-advisor",
+  "description": "Challenge assumptions, assess technology and business shifts, compare strategic options, and recommend evidence-backed experiments and long-term decisions for Thomas Martinsen.",
+  "version": "1.0.1",
+  "author": {
+    "name": "Thomas Martinsen"
+  },
+  "repository": "https://github.com/thomasmartinsen/agents",
+  "skills": "./codex-skills/",
+  "interface": {
+    "displayName": "Strategic Advisor"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "technical-article-writer",
+  "description": "Create source-backed tutorials, explainers, and technical articles on agentic engineering for Thomas Martinsen's developer audience.",
+  "version": "1.0.1",
+  "author": {
+    "name": "Thomas Martinsen"
+  },
+  "repository": "https://github.com/thomasmartinsen/agents",
+  "skills": "./codex-skills/",
+  "interface": {
+    "displayName": "Technical article writer"
+  }
+}

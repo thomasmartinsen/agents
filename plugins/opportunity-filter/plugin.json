@@ -1,7 +1,7 @@
 {
   "name": "opportunity-filter",
   "description": "Evaluate invitations, projects, speaking engagements, and new opportunities for Thomas Martinsen against strategic value, time cost, energy, and displaced commitments.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Thomas Martinsen"
   },

@@ -14,7 +14,7 @@ class PluginTests(unittest.TestCase):
         outputs, catalog = sync_plugins.build()
         sources = sorted(sync_plugins.SOURCE_DIR.glob("*.agent.md"))
         self.assertEqual(len(catalog["plugins"]), len(sources))
-        self.assertEqual(len(outputs), len(sources) * 2)
+        self.assertEqual(len(outputs), len(sources) * 4)
         self.assertEqual(len({entry["name"] for entry in catalog["plugins"]}), len(sources))
         for source, entry in zip(sources, catalog["plugins"]):
             root = sync_plugins.PLUGIN_DIR / entry["name"]
@@ -31,6 +31,46 @@ class PluginTests(unittest.TestCase):
                 "repo": "thomasmartinsen/agents",
                 "ref": "main",
                 "path": f"plugins/{entry['name']}",
+            })
+
+    def test_codex_plugins_expose_skills_with_existing_tool_boundaries(self):
+        outputs, catalog = sync_plugins.build()
+        for source, entry in zip(sorted(sync_plugins.SOURCE_DIR.glob("*.agent.md")), catalog["plugins"]):
+            root = sync_plugins.PLUGIN_DIR / entry["name"]
+            manifest = json.loads(outputs[root / ".codex-plugin" / "plugin.json"])
+            profile = sync_plugins.parse_profile(source)
+            self.assertEqual(manifest["name"], entry["name"])
+            self.assertEqual(manifest["version"], entry["version"])
+            self.assertEqual(manifest["interface"]["displayName"], profile["name"])
+            self.assertEqual(manifest["skills"], "./codex-skills/")
+            skill = outputs[root / manifest["skills"] / entry["name"] / "SKILL.md"]
+            _, frontmatter, body = skill.split("---", 2)
+            self.assertIn(f"name: {entry['name']}\n", frontmatter)
+            description = frontmatter.split("description: ", 1)[1].strip()
+            self.assertEqual(json.loads(description), profile["description"])
+            self.assertEqual(body.strip(), sync_plugins.developer_instructions(profile))
+            self.assertIn("Do not execute generated code or run commands", body)
+            if "edit" not in profile["tools"]:
+                self.assertIn("Do not create, edit, or delete files.", body)
+            if "web" not in profile["tools"]:
+                self.assertIn("Do not browse or search the web.", body)
+            self.assertNotIn(root / "skills" / entry["name"] / "SKILL.md", outputs)
+
+    def test_codex_catalog_uses_supported_git_sources_and_policies(self):
+        _, catalog = sync_plugins.build()
+        codex = sync_plugins.codex_catalog(catalog)
+        self.assertEqual(codex["name"], catalog["name"])
+        self.assertEqual(len(codex["plugins"]), len(catalog["plugins"]))
+        for copilot_entry, codex_entry in zip(catalog["plugins"], codex["plugins"]):
+            self.assertEqual(codex_entry["name"], copilot_entry["name"])
+            self.assertEqual(codex_entry["source"], {
+                "source": "git-subdir",
+                "url": "https://github.com/thomasmartinsen/agents.git",
+                "ref": "main",
+                "path": f"./plugins/{copilot_entry['name']}",
+            })
+            self.assertEqual(codex_entry["policy"], {
+                "installation": "AVAILABLE", "authentication": "ON_INSTALL",
             })
 
     def test_empty_source_directory_is_an_error(self):
@@ -51,7 +91,11 @@ class PluginTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             catalog = root / "marketplace.json"
-            args = ["sync_plugins.py", "--marketplace-output", str(catalog)]
+            codex_catalog = root / ".agents" / "plugins" / "marketplace.json"
+            args = [
+                "sync_plugins.py", "--marketplace-output", str(catalog),
+                "--codex-marketplace-output", str(codex_catalog),
+            ]
             with patch.object(sync_plugins, "PLUGIN_DIR", root / "plugins"):
                 with patch("sys.argv", args):
                     self.assertEqual(sync_plugins.main(), 0)
@@ -69,6 +113,11 @@ class PluginTests(unittest.TestCase):
                 with patch("sys.argv", args + ["--check"]):
                     self.assertEqual(sync_plugins.main(), 0)
                     catalog.write_text("{}\n", encoding="utf-8")
+                    self.assertEqual(sync_plugins.main(), 1)
+                with patch("sys.argv", args):
+                    self.assertEqual(sync_plugins.main(), 0)
+                with patch("sys.argv", args + ["--check"]):
+                    codex_catalog.write_text("{}\n", encoding="utf-8")
                     self.assertEqual(sync_plugins.main(), 1)
 
 

@@ -64,16 +64,20 @@ def toml_multiline(value: str) -> str:
     return f'"""\n{escaped}\n"""'
 
 
-def render(profile: dict, source: Path) -> str:
+def developer_instructions(profile: dict) -> str:
     tools = profile["tools"]
     notes = [
         TOOL_NOTES["edit" if "edit" in tools else "no-edit"],
         TOOL_NOTES["web" if "web" in tools else "no-web"],
         "Do not execute generated code or run commands beyond reading and searching files.",
     ]
-    instructions = (
+    return (
         f"{profile['body']}\n\n## Tool boundaries\n\n" + "\n".join(f"- {note}" for note in notes)
     )
+
+
+def render(profile: dict, source: Path) -> str:
+    instructions = developer_instructions(profile)
     rel = source.relative_to(REPO_ROOT).as_posix()
     return (
         f"# Generated from {rel} by scripts/sync_codex_agents.py. Do not edit directly.\n"

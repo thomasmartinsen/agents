@@ -1,7 +1,7 @@
 {
   "name": "content-repurposer",
   "description": "Adapt Thomas Martinsen's existing articles, talks, transcripts, and notes into faithful channel-specific content without inventing claims.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Thomas Martinsen"
   },

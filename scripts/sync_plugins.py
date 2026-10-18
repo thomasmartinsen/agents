@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Package Copilot agents as plugins and optionally export their marketplace catalog."""
+"""Package agents for Copilot and Codex and optionally export their marketplace catalogs."""
 
 from __future__ import annotations
 
@@ -9,10 +9,10 @@ import re
 import sys
 from pathlib import Path
 
-from sync_codex_agents import REPO_ROOT, SOURCE_DIR, parse_profile
+from sync_codex_agents import REPO_ROOT, SOURCE_DIR, developer_instructions, parse_profile
 
 PLUGIN_DIR = REPO_ROOT / "plugins"
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 REPOSITORY = "https://github.com/thomasmartinsen/agents"
 MARKETPLACE_NAME = "thomasmartinsen"
 
@@ -43,6 +43,20 @@ def build() -> tuple[dict[Path, str], dict]:
         }
         outputs[PLUGIN_DIR / name / "plugin.json"] = json_text(manifest)
         outputs[PLUGIN_DIR / name / "agents" / source.name] = source.read_text(encoding="utf-8")
+        outputs[PLUGIN_DIR / name / ".codex-plugin" / "plugin.json"] = json_text({
+            "name": name,
+            "description": profile["description"],
+            "version": VERSION,
+            "author": manifest["author"],
+            "repository": REPOSITORY,
+            "skills": "./codex-skills/",
+            "interface": {"displayName": profile["name"]},
+        })
+        outputs[PLUGIN_DIR / name / "codex-skills" / name / "SKILL.md"] = (
+            f"---\nname: {name}\n"
+            f"description: {json.dumps(profile['description'], ensure_ascii=False)}\n---\n\n"
+            f"{developer_instructions(profile)}\n"
+        )
         entries.append({
             "name": name,
             "description": manifest["description"],
@@ -67,6 +81,29 @@ def build() -> tuple[dict[Path, str], dict]:
     return outputs, catalog
 
 
+def codex_catalog(catalog: dict) -> dict:
+    return {
+        "name": MARKETPLACE_NAME,
+        "interface": {"displayName": "Thomas Martinsen"},
+        "plugins": [
+            {
+                "name": entry["name"],
+                "description": entry["description"],
+                "version": entry["version"],
+                "source": {
+                    "source": "git-subdir",
+                    "url": f"{REPOSITORY}.git",
+                    "ref": "main",
+                    "path": f"./{entry['source']['path']}",
+                },
+                "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
+                "category": "Productivity",
+            }
+            for entry in catalog["plugins"]
+        ],
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true", help="fail if generated files are out of date")
@@ -75,15 +112,29 @@ def main() -> int:
         type=Path,
         help="also export the catalog for thomasmartinsen/marketplace (replaces the target file)",
     )
+    parser.add_argument(
+        "--codex-marketplace-output",
+        type=Path,
+        help="also export the Codex .agents/plugins/marketplace.json (replaces the target file)",
+    )
     args = parser.parse_args()
 
     outputs, catalog = build()
-    existing = set(PLUGIN_DIR.glob("*/plugin.json")) | set(PLUGIN_DIR.glob("*/agents/*.agent.md"))
-    if args.marketplace_output:
-        target = args.marketplace_output.resolve()
-        if target in outputs or target == Path(__file__).resolve():
-            parser.error("--marketplace-output must not overwrite plugin files or this script")
-        outputs[target] = json_text(catalog)
+    existing = (
+        set(PLUGIN_DIR.glob("*/plugin.json"))
+        | set(PLUGIN_DIR.glob("*/agents/*.agent.md"))
+        | set(PLUGIN_DIR.glob("*/.codex-plugin/plugin.json"))
+        | set(PLUGIN_DIR.glob("*/codex-skills/*/SKILL.md"))
+    )
+    for target, data in (
+        (args.marketplace_output, catalog),
+        (args.codex_marketplace_output, codex_catalog(catalog)),
+    ):
+        if target:
+            target = target.resolve()
+            if target in outputs or target == Path(__file__).resolve():
+                parser.error("Marketplace outputs must be distinct and must not overwrite plugin files or this script")
+            outputs[target] = json_text(data)
 
     stale = [
         path for path, content in outputs.items()
@@ -104,8 +155,9 @@ def main() -> int:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8", newline="\n")
     print(f"Wrote {len(catalog['plugins'])} plugins to {PLUGIN_DIR}")
-    if args.marketplace_output:
-        print(f"Exported marketplace catalog to {args.marketplace_output}")
+    for target in (args.marketplace_output, args.codex_marketplace_output):
+        if target:
+            print(f"Exported marketplace catalog to {target}")
     return 0
 
 

@@ -1,7 +1,7 @@
 {
   "name": "health-guardian",
   "description": "Review Thomas Martinsen's workload, sleep, recovery, travel, and family balance to support sustainable wellbeing without providing medical diagnosis or treatment.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Thomas Martinsen"
   },

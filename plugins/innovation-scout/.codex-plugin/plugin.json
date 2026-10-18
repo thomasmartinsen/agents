@@ -1,0 +1,13 @@
+{
+  "name": "innovation-scout",
+  "description": "Research emerging technologies, weak signals, AI trends, and future scenarios, then propose evidence-backed experiments and thought leadership opportunities for Thomas Martinsen.",
+  "version": "1.0.1",
+  "author": {
+    "name": "Thomas Martinsen"
+  },
+  "repository": "https://github.com/thomasmartinsen/agents",
+  "skills": "./codex-skills/",
+  "interface": {
+    "displayName": "Innovation Scout"
+  }
+}

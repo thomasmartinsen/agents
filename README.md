@@ -82,7 +82,33 @@ brand guide or an official Microsoft position. Actual experiences, customer
 stories, company messaging, and personal opinions must come from you or approved
 source material.
 
-## Codex
+## Codex plugins
+
+The same marketplace also supports Codex:
+
+```sh
+codex plugin marketplace add thomasmartinsen/marketplace
+codex plugin list --marketplace thomasmartinsen --available --json
+codex plugin add linkedin-writer@thomasmartinsen
+```
+
+Start a new Codex session and ask it to use the installed plugin's skill.
+Codex plugins expose these roles as **skills**, not native custom subagents.
+Their instructions include the same written tool boundaries as the Codex
+profiles below; these are guidance, not per-tool permission enforcement.
+
+Each package includes a `.codex-plugin/plugin.json` referencing `codex-skills/`.
+This separate skill directory prevents Copilot from also discovering the Codex
+skill as a second copy of its agent. The Codex marketplace catalog lives at
+`.agents/plugins/marketplace.json` in the marketplace repository; Copilot uses
+`.github/plugin/marketplace.json`. Their Git source formats differ, so copying
+the Copilot catalog into Codex's manifest location is not sufficient.
+
+If registration previously failed with "marketplace root does not contain a
+supported manifest", retry the add command. To refresh an existing registration,
+use `codex plugin marketplace upgrade thomasmartinsen`.
+
+## Codex custom agents
 
 The same agents are available to Codex as project-scoped custom agents in
 `.codex/agents/*.toml`, using the
@@ -128,10 +154,12 @@ version, export the catalog into a separate checkout of the marketplace:
 
 ```powershell
 python scripts\sync_plugins.py --marketplace-output C:\repos\marketplace\.github\plugin\marketplace.json
+python scripts\sync_plugins.py --codex-marketplace-output C:\repos\marketplace\.agents\plugins\marketplace.json
 python scripts\sync_plugins.py --check --marketplace-output C:\repos\marketplace\.github\plugin\marketplace.json
+python scripts\sync_plugins.py --check --codex-marketplace-output C:\repos\marketplace\.agents\plugins\marketplace.json
 ```
 
-This replaces the entire target catalog, which currently lists only these
+These commands replace the entire target catalogs, which currently list only these
 agents. If the marketplace later includes other plugins, merge the exported
 entries rather than overwriting them. The catalog references `main` in this
 repository, so merge plugin changes here before the corresponding marketplace
