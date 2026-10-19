@@ -1,0 +1,10 @@
+{
+  "name": "tpd-partner",
+  "description": "Spar with Thomas Martinsen on building Tech Passion Day, from conference strategy, speaker planning, and community partnerships to communications, social media, hosting, and event operations.",
+  "version": "1.0.1",
+  "author": {
+    "name": "Thomas Martinsen"
+  },
+  "repository": "https://github.com/thomasmartinsen/agents",
+  "agents": "agents/"
+}

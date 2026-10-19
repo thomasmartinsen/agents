@@ -20,10 +20,11 @@ creator, alongside personal strategy, capacity, relationships, and wellbeing.
 | [Opportunity Filter](.github/agents/opportunity-filter.agent.md) | Invitations and projects assessed against value and displaced commitments | "Assess this speaking invitation against my current commitments, including preparation and travel." |
 | [Relationship Manager](.github/agents/relationship-manager.agent.md) | Thoughtful follow-ups, reconnections, and consent-aware introductions | "Use these meeting notes to suggest three meaningful follow-ups and draft messages." |
 | [Strategic Advisor](.github/agents/strategic-advisor.agent.md) | Strategic options, assumption testing, and long-term decisions | "Challenge this initiative, compare the alternatives, and propose a low-cost experiment." |
+| [tpd-partner](.github/agents/tpd-partner.agent.md) | Tech Passion Day strategy, speakers, communications, social media, hosting, and operations | "Challenge our program plan for the next Tech Passion Day and propose a realistic speaker and communications timeline." |
 
 ## Install from the marketplace
 
-Each of the 12 agents is also an independently installable Copilot CLI plugin
+Each of the 13 agents is also an independently installable Copilot CLI plugin
 under `plugins/<agent-id>/`. Register the
 [marketplace](https://github.com/thomasmartinsen/marketplace), then install the
 agents you need:
@@ -33,6 +34,7 @@ copilot plugin marketplace add thomasmartinsen/marketplace
 copilot plugin marketplace browse thomasmartinsen
 copilot plugin install linkedin-writer@thomasmartinsen
 copilot plugin install chief-of-staff@thomasmartinsen
+copilot plugin install tpd-partner@thomasmartinsen
 ```
 
 Use any filename from the table above without `.agent.md` as the plugin ID.
@@ -107,6 +109,32 @@ the Copilot catalog into Codex's manifest location is not sufficient.
 If registration previously failed with "marketplace root does not contain a
 supported manifest", retry the add command. To refresh an existing registration,
 use `codex plugin marketplace upgrade thomasmartinsen`.
+
+## Tech Passion Day partner
+
+`tpd-partner` is a conference-wide sparring partner for
+[Tech Passion Day](https://techpassionday.com), from concept and community
+partnerships through speaker selection, promotion, event-day hosting, and
+post-event learning. It supports Danish and English, practical organizer plans,
+and ready-to-review copy without sending messages or publishing content.
+
+Include the edition, planning phase, audience, and any confirmed constraints.
+The agent checks edition-specific facts rather than assuming the website's
+current landing page describes the next conference. Example prompts:
+
+- "Help shape the next TPD: challenge our audience promise and suggest three
+  program themes within this volunteer capacity."
+- "Review these session proposals for topic gaps and agenda conflicts. Draft
+  a speaker invitation, but don't assume anyone is confirmed."
+- "Build a four-week LinkedIn and newsletter plan from these approved details.
+  Draft the first speaker announcement in Danish."
+- "Write a welcoming MC opening and a run of show with transitions, AV cues,
+  breaks, proposed owners, and a fallback for a speaker cancellation."
+
+Install in Copilot CLI with `copilot plugin install tpd-partner@thomasmartinsen`,
+or in Codex with `codex plugin add tpd-partner@thomasmartinsen`. These commands
+require the marketplace registration described above. The standalone Codex
+custom agent is named `tpd_partner`.
 
 ## Codex custom agents
 
