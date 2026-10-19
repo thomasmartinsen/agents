@@ -167,6 +167,32 @@ update. For a release, update `VERSION` in `scripts/sync_plugins.py`, regenerate
 and commit the packages and catalog in their respective repositories. Existing
 installations update explicitly; the catalog does not pin immutable releases.
 
+### Checking publication
+
+After publishing packages and updating both marketplace catalogs, verify the
+remote `main` branches against the generated files from this checkout:
+
+```sh
+python scripts/check_published_plugins.py
+```
+
+This read-only command uses your authenticated `gh` CLI and requires read access
+to both private repositories. It compares Git blob hashes for every generated
+package file and both complete client catalogs, including formatting. Missing
+files, stale content, authentication errors, and incomplete Git trees fail
+explicitly. It does not install plugins, modify repositories, or verify runtime
+behavior in either client. When run on a branch with unpublished profile
+changes, it is expected to fail until those changes are published.
+
+The **Check generated agents and plugins** workflow also offers a manual
+publication check through **Run workflow** after this workflow change is merged.
+Configure the `MARKETPLACE_READ_TOKEN` Actions secret with `Contents: read`
+access to both `thomasmartinsen/agents` and `thomasmartinsen/marketplace` first.
+The default Actions token cannot read the other private repository. No token
+is created or configured automatically; a manual run without the secret fails
+with setup instructions. Normal push and pull-request checks remain offline
+and do not require this secret.
+
 ## Tools and boundaries
 
 Profiles use a role-specific subset of `read`, `search`, `edit`, and `web` tool
